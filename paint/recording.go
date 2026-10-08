@@ -82,7 +82,9 @@ func (p *Painter) Keep(mark int, r *Recording) {
 // Empty reports whether the recording holds nothing to draw.
 func (r *Recording) Empty() bool { return r == nil || len(r.ops) == 0 }
 
-// Replay draws the recording again, in the current space.
+// Replay draws the recording again, in the current space. What was
+// recorded adding light adds again, and the rest takes the blend in
+// force.
 func (p *Painter) Replay(r *Recording) {
 	if r.Empty() {
 		return
@@ -93,7 +95,7 @@ func (p *Painter) Replay(r *Recording) {
 		switch op := k.op.(type) {
 		case *RRectOp:
 			c := *op
-			c.Transform = p.at()
+			c.Transform, c.Blend = p.at(), p.blendFor(op.Blend)
 			p.record(p.takeRRect(c), k.bounds)
 		case *TextOp:
 			t := p.texts.take()
@@ -103,11 +105,11 @@ func (p *Painter) Replay(r *Recording) {
 			p.record(t, k.bounds)
 		case *ImageOp:
 			c := *op
-			c.Transform = p.at()
+			c.Transform, c.Blend = p.at(), p.blendFor(op.Blend)
 			p.record(&c, k.bounds)
 		case *MaskOp:
 			c := *op
-			c.Transform = p.at()
+			c.Transform, c.Blend = p.at(), p.blendFor(op.Blend)
 			p.record(&c, k.bounds)
 		case *LayerOp:
 			closers = append(closers, p.Layer(op.Opts))

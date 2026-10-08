@@ -26,6 +26,9 @@ type MaskOp struct {
 	Color     color.NRGBA
 	Gradient  *Gradient
 	Transform Transform
+	// Blend is how the tinted mask meets what is beneath it, set from
+	// the blend in force as the op is recorded; see [Painter.Blend].
+	Blend Blend
 }
 
 func (*MaskOp) isOp() {}
@@ -39,7 +42,7 @@ func (p *Painter) Mask(s Shape, r geom.Rect, c color.NRGBA) {
 	if !reflect.TypeOf(s).Comparable() {
 		panic(fmt.Sprintf("paint: Mask of %T, a shape that is not comparable", s))
 	}
-	p.record(&MaskOp{Shape: s, Rect: r, Color: c, Transform: p.at()}, r)
+	p.record(&MaskOp{Shape: s, Rect: r, Color: c, Transform: p.at(), Blend: p.blend}, r)
 }
 
 // MaskFill records s drawn into r and coloured by f, which may be a
@@ -56,5 +59,5 @@ func (p *Painter) MaskFill(s Shape, r geom.Rect, f Fill) {
 	if !reflect.TypeOf(s).Comparable() {
 		panic(fmt.Sprintf("paint: Mask of %T, a shape that is not comparable", s))
 	}
-	p.record(&MaskOp{Shape: s, Rect: r, Gradient: f.Gradient, Transform: p.at()}, r)
+	p.record(&MaskOp{Shape: s, Rect: r, Gradient: f.Gradient, Transform: p.at(), Blend: p.blend}, r)
 }
