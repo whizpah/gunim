@@ -33,6 +33,14 @@ type MaskOp struct {
 
 func (*MaskOp) isOp() {}
 
+// takeMask takes a MaskOp from the painter's blocks, as takeRRect does
+// a shape, so a frame of hundreds of icons and sprites allocates none.
+func (p *Painter) takeMask(op MaskOp) *MaskOp {
+	v := p.masks.take()
+	*v = op
+	return v
+}
+
 // Mask records s drawn into r and tinted by c. A driver snaps r to whole device pixels while the transform in force
 // only moves it.
 func (p *Painter) Mask(s Shape, r geom.Rect, c color.NRGBA) {
@@ -42,7 +50,7 @@ func (p *Painter) Mask(s Shape, r geom.Rect, c color.NRGBA) {
 	if !reflect.TypeOf(s).Comparable() {
 		panic(fmt.Sprintf("paint: Mask of %T, a shape that is not comparable", s))
 	}
-	p.record(&MaskOp{Shape: s, Rect: r, Color: c, Transform: p.at(), Blend: p.blend}, r)
+	p.record(p.takeMask(MaskOp{Shape: s, Rect: r, Color: c, Transform: p.at(), Blend: p.blend}), r)
 }
 
 // MaskFill records s drawn into r and coloured by f, which may be a
@@ -59,5 +67,5 @@ func (p *Painter) MaskFill(s Shape, r geom.Rect, f Fill) {
 	if !reflect.TypeOf(s).Comparable() {
 		panic(fmt.Sprintf("paint: Mask of %T, a shape that is not comparable", s))
 	}
-	p.record(&MaskOp{Shape: s, Rect: r, Gradient: f.Gradient, Transform: p.at(), Blend: p.blend}, r)
+	p.record(p.takeMask(MaskOp{Shape: s, Rect: r, Gradient: f.Gradient, Transform: p.at(), Blend: p.blend}), r)
 }
