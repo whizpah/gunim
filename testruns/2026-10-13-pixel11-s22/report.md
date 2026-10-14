@@ -46,3 +46,12 @@ whole, on the same questions as in 1:
 ![S22, Europe, land whole](3-s22-europa-frankrike.jpg)
 ![S22, zoomed in, land whole](3-s22-varldsdelar-sydamerika.jpg)
 ![Pixel, Europe, land whole](3-pixel-europa-frankrike.png)
+
+## 4. gunim #116 (94b3865, mipmaps drawn into a scratch texture): pass on the Pixel
+
+Läxkompis main with gunim at #116's head, on the Pixel 11 Pro
+(2026-10-14): the land whole on the same questions. The S22 is still to
+test.
+
+![Pixel, #116, Europe](4-pixel-pr116-europa-frankrike.png)
+![Pixel, #116, South America](4-pixel-pr116-varldsdelar-sydamerika.png)
